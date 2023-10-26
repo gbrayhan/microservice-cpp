@@ -1,15 +1,15 @@
 #pragma once
 #include <cpprest/http_listener.h>
 
-#include "Base/Controller.hpp"
+#include "../baseController/Controller.hpp"
 
 
 using namespace web;
 using namespace web::http;
 using namespace web::http::experimental::listener;
 
-// Goodbye Controller
-class GoodbyeController : public Controller {
+// item Controller
+class ItemController : public Controller {
 public:
     void HandleGet(http_request message) override {
         message.reply(status_codes::OK, U("Goodbye from the server from GET!"));
@@ -26,8 +26,5 @@ public:
     void HandleDelete(http_request message) override {
         message.reply(status_codes::OK, U("Goodbye from the server from DELETE!"));
     }
-
-
-
 
 };

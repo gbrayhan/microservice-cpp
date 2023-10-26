@@ -1,5 +1,5 @@
-#include "controllers/HelloController.hpp"
-#include "controllers/GoodbyeController.hpp"
+#include "src/infrastructure/rest/controllers/user/UserController.hpp"
+#include "src/infrastructure/rest/controllers/item/ItemController.hpp"
 #include <cpprest/http_listener.h>
 
 using namespace web;
@@ -7,16 +7,16 @@ using namespace web::http;
 using namespace web::http::experimental::listener;
 
 enum class Route {
-    Hello,
-    Bye,
+    Item,
+    User,
     Unknown
 };
 
 class SimpleServer {
 public:
     SimpleServer()
-            : helloController_(new HelloController()),
-              goodbyeController_(new GoodbyeController()) {}
+            : userController_(new UserController()),
+              itemController_(new ItemController()) {}
 
     void Start(const utility::string_t& url);
 
@@ -25,8 +25,8 @@ private:
     void HandleRequest(http_request message);
 
     http_listener listener_;
-    std::unique_ptr<HelloController> helloController_;
-    std::unique_ptr<GoodbyeController> goodbyeController_;
+    std::unique_ptr<UserController> userController_;
+    std::unique_ptr<ItemController> itemController_;
 };
 
 void SimpleServer::Start(const utility::string_t& url) {
@@ -38,8 +38,8 @@ void SimpleServer::Start(const utility::string_t& url) {
 }
 
 Route SimpleServer::ResolveRoute(const utility::string_t& path) {
-    if (path == U("/hello")) return Route::Hello;
-    if (path == U("/bye")) return Route::Bye;
+    if (path == U("/user")) return Route::User;
+    if (path == U("/item")) return Route::Item;
     return Route::Unknown;
 }
 
@@ -47,18 +47,18 @@ void SimpleServer::HandleRequest(http_request message) {
     Route route = ResolveRoute(uri::decode(message.relative_uri().path()));
 
     auto method = message.method();
-    if (route == Route::Hello) {
-        if (method == methods::GET) helloController_->HandleGet(message);
-        else if (method == methods::POST) helloController_->HandlePost(message);
-        else if (method == methods::PUT) helloController_->HandlePut(message);
-        else if (method == methods::DEL) helloController_->HandleDelete(message);
+    if (route == Route::User) {
+        if (method == methods::GET) userController_->HandleGet(message);
+        else if (method == methods::POST) userController_->HandlePost(message);
+        else if (method == methods::PUT) userController_->HandlePut(message);
+        else if (method == methods::DEL) userController_->HandleDelete(message);
         else message.reply(status_codes::MethodNotAllowed);
     }
-    else if (route == Route::Bye) {
-        if (method == methods::GET) goodbyeController_->HandleGet(message);
-        else if (method == methods::POST) goodbyeController_->HandlePost(message);
-        else if (method == methods::PUT) goodbyeController_->HandlePut(message);
-        else if (method == methods::DEL) goodbyeController_->HandleDelete(message);
+    else if (route == Route::Item) {
+        if (method == methods::GET) itemController_->HandleGet(message);
+        else if (method == methods::POST) itemController_->HandlePost(message);
+        else if (method == methods::PUT) itemController_->HandlePut(message);
+        else if (method == methods::DEL) itemController_->HandleDelete(message);
         else message.reply(status_codes::MethodNotAllowed);
     }
     else {
