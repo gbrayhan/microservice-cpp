@@ -1,5 +1,9 @@
-#include "src/infrastructure/rest/controllers/user/UserController.hpp"
-#include "src/infrastructure/rest/controllers/item/ItemController.hpp"
+#include "infrastructure/rest/controllers/user/UserController.hpp"
+#include "infrastructure/rest/controllers/item/ItemController.hpp"
+#include "domain/services/user/UserDomainService.hpp"
+#include "domain/services/item/ItemDomainService.hpp"
+#include "infrastructure/repository/user/UserRepository.hpp"
+#include "infrastructure/repository/item/ItemRepository.hpp"
 #include <cpprest/http_listener.h>
 
 using namespace web;
@@ -14,10 +18,16 @@ enum class Route {
 
 class SimpleServer {
 public:
-    SimpleServer()
-            : userController_(new UserController()),
-              itemController_(new ItemController()) {}
+    SimpleServer() {
+        // Crear las dependencias y "inyectarlas"
+        std::unique_ptr<UserRepository> userRepo(new UserRepository());
+        std::unique_ptr<UserDomainService> userService(new UserDomainService(std::move(userRepo)));
+        userController_ = std::unique_ptr<UserController>(new UserController(std::move(userService)));
 
+        std::unique_ptr<ItemRepository> itemRepo(new ItemRepository());
+        std::unique_ptr<ItemDomainService> itemService(new ItemDomainService(std::move(itemRepo)));
+        itemController_ = std::unique_ptr<ItemController>(new ItemController(std::move(itemService)));
+    }
     void Start(const utility::string_t& url);
 
 private:

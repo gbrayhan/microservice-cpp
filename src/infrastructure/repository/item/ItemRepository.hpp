@@ -1,5 +1,5 @@
 #pragma once
-#include "IItemRepository.hpp"
+#include "infrastructure/repository/item/IItemRepository.hpp"
 #include "domain/entities/item/Item.hpp"
 
 class ItemRepository : public IItemRepository {

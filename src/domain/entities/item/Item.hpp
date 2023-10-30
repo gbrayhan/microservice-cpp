@@ -1,5 +1,3 @@
-// Domain/Entities/User.hpp
-
 #pragma once
 #include <string>
 
