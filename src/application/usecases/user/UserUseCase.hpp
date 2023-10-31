@@ -1,23 +1,26 @@
-
 #pragma once
-#include "IUsecase.hpp"
+#include "application/usecases/user/IUserUseCase.hpp"
 #include "infrastructure/repository/user/IUserRepository.hpp"
-#include "domain/services/user/UserService.hpp"
+#include "domain/services/user/UserDomainService.hpp"
 
 class UserUseCase : public IUserUseCase {
 private:
     std::unique_ptr<IUserRepository> repository_;
-    UserService userService_;
+    UserDomainService& userDomainService_;  // Cambiado a referencia
 
 public:
-    UsecaseImpl(std::unique_ptr<IUserRepository> repo)
-            : repository_(std::move(repo)) {}
+    UserUseCase(UserDomainService& userDomainService, std::unique_ptr<IUserRepository> repo)
+            : userDomainService_(userDomainService), repository_(std::move(repo)) {}  // Ajustado el orden aquí
 
     User RetrieveValidUser() override {
         auto user = repository_->GetUser();
-        if (userService_.IsValidUser(user)) {
+        if (userDomainService_.IsValidUser(user)) {
             return user;
         }
         return User("", "");
+    }
+
+    User GetSomeUser()  {
+        return repository_->GetUser();
     }
 };

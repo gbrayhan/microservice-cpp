@@ -4,4 +4,5 @@
 class IItemRepository {
 public:
     virtual Item GetItem() = 0;
+    virtual ~IItemRepository() = default;
 };

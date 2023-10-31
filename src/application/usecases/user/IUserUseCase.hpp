@@ -1,8 +1,8 @@
 
 #pragma once
-#include "domain/entities/User.hpp"
+#include "domain/entities/user/User.hpp"
 
-class IUseCaseUser {
+class IUserUseCase {
 public:
     virtual User RetrieveValidUser() = 0;
 };

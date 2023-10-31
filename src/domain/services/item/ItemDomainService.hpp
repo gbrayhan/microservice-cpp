@@ -15,5 +15,7 @@ public:
     bool IsValidItem(const Item& item) {
         return !item.GetName().empty();
     }
-    // ... otros métodos relacionados con la lógica de negocio de los ítems
+
+    // ... resto del código ...
 };
+

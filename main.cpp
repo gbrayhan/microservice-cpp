@@ -4,6 +4,8 @@
 #include "domain/services/item/ItemDomainService.hpp"
 #include "infrastructure/repository/user/UserRepository.hpp"
 #include "infrastructure/repository/item/ItemRepository.hpp"
+#include "application/usecases/user/UserUseCase.hpp"
+#include "application/usecases/item/ItemUseCase.hpp"
 #include <cpprest/http_listener.h>
 
 using namespace web;
@@ -21,12 +23,15 @@ public:
     SimpleServer() {
         // Crear las dependencias y "inyectarlas"
         std::unique_ptr<UserRepository> userRepo(new UserRepository());
-        std::unique_ptr<UserDomainService> userService(new UserDomainService(std::move(userRepo)));
-        userController_ = std::unique_ptr<UserController>(new UserController(std::move(userService)));
+        UserDomainService userDomainService(std::move(userRepo));  // Mueve el repositorio al UserDomainService
+        std::unique_ptr<UserUseCase> userUseCase(new UserUseCase(userDomainService, std::move(userRepo)));  // Pasa el UserDomainService al UserUseCase
+        userController_ = std::unique_ptr<UserController>(new UserController(std::move(userUseCase)));
+
 
         std::unique_ptr<ItemRepository> itemRepo(new ItemRepository());
-        std::unique_ptr<ItemDomainService> itemService(new ItemDomainService(std::move(itemRepo)));
-        itemController_ = std::unique_ptr<ItemController>(new ItemController(std::move(itemService)));
+        ItemDomainService itemDomainService(std::move(itemRepo));  // Mueve el repositorio al ItemDomainService
+        std::unique_ptr<ItemUseCase> itemUseCase(new ItemUseCase(itemDomainService, std::move(itemRepo)));  // Pasa el ItemDomainService al ItemUseCase
+        itemController_ = std::unique_ptr<ItemController>(new ItemController(std::move(itemUseCase)));
     }
     void Start(const utility::string_t& url);
 

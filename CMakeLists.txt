@@ -3,9 +3,13 @@ project(SimpleServerApp)
 
 set(CMAKE_CXX_STANDARD 11)
 
-find_package(cpprestsdk REQUIRED)
+# Obtener la ruta de OpenSSL de la variable de entorno
+set(OPENSSL_ROOT_DIR $ENV{OPENSSL_ROOT_DIR})
 
+
+find_package(cpprestsdk REQUIRED)
 include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${OPENSSL_ROOT_DIR}/include)
 
 
 add_executable(SimpleServerApp
@@ -24,6 +28,15 @@ add_executable(SimpleServerApp
         src/application/usecases/item/ItemUseCase.hpp
         src/application/usecases/user/IUserUseCase.hpp
         src/application/usecases/user/UserUseCase.hpp
-        src/application/usecases/user/UserUseCase.hpp)
+        src/application/usecases/user/UserUseCase.hpp
+        src/application/usecases/item/IItemUseCase.hpp)
 
-target_link_libraries(SimpleServerApp PRIVATE cpprestsdk::cpprest)
+find_library(OPENSSL_SSL_LIBRARY NAMES ssl PATHS ${OPENSSL_ROOT_DIR}/lib NO_DEFAULT_PATH)
+find_library(OPENSSL_CRYPTO_LIBRARY NAMES crypto PATHS ${OPENSSL_ROOT_DIR}/lib NO_DEFAULT_PATH)
+
+target_link_libraries(SimpleServerApp PRIVATE
+        cpprestsdk::cpprest
+        ${OPENSSL_SSL_LIBRARY}
+        ${OPENSSL_CRYPTO_LIBRARY}
+)
+
